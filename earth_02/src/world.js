@@ -1,3 +1,6 @@
+import vertexShader from './vertex.glsl';
+import fragmentShader from './fragment.glsl';
+
 function World(el) {
   this.container = document.querySelector(el);
   this.renderer = null;
@@ -15,7 +18,8 @@ function World(el) {
     FAR_CLIPPING_PLANE: 1000,
 
     WORLD_RADIUS: 1,
-    PARTICLE_SIZE: 0.08
+    GLOBE_RESOLUTION: 64,
+    PARTICLE_SIZE: 0.05
   }
 }
 
@@ -68,8 +72,8 @@ World.prototype.sprite = function () {
     canvas.width / 2
   );
   gradient.addColorStop(0, 'rgba(230,215,128,1)');
-  gradient.addColorStop(0.2, 'rgba(220,200,110,1)');
-  gradient.addColorStop(0.22, 'rgba(200,180,98,.2)');
+  gradient.addColorStop(0.5, 'rgba(220,200,110,1)');
+  gradient.addColorStop(0.72, 'rgba(200,180,98,.2)');
   gradient.addColorStop(1, 'rgba(220,250,255,0)');
   ctx.fillStyle = gradient;
   // ctx.fillStyle = "#FFFFFF";
@@ -80,15 +84,7 @@ World.prototype.sprite = function () {
 World.prototype.initWorld = function () {
   var CONST = this.constObj;
 
-  var planetMap = THREE.ImageUtils.loadTexture("Carte de la terre.png");
-  var canvas = document.createElement('canvas');
-  canvas.width = planetMap.image.width;
-  canvas.height = planetMap.image.height;
-  canvas.getContext('2d').drawImage(planetMap.image, 0, 0, canvas.width, canvas.height);
-
   var geometry = new THREE.Geometry();
-  console.log(geometry);
-
   var count = 0;
   var uvSupport = {};
   var step = Math.atan(CONST.PARTICLE_SIZE / CONST.WORLD_RADIUS / 2);
@@ -114,19 +110,34 @@ World.prototype.initWorld = function () {
   geometry.mergeVertices();
   geometry.verticesNeedUpdate = true;
 
-
-
   var texture = new THREE.CanvasTexture(this.sprite());
-  var material = new THREE.PointsMaterial({
-    size: CONST.PARTICLE_SIZE,
-    map: texture,
-    vertexColors: THREE.VertexColors,
-    blending: THREE.AdditiveBlending,
-    depthTest: false,
-    transparent: true
+  var planetMap = THREE.ImageUtils.loadTexture("Carte de la terre.png");
+  var material = new THREE.ShaderMaterial({
+    uniforms: {
+      "u_ps": { value: 5 },
+      "u_r": { value: CONST.WORLD_RADIUS + 0.0 },
+      "u_pi": { value: Math.PI },
+      "u_ball_tex": { type: 't', value: planetMap },
+      "u_particle_tex": { type: 't', value: texture }
+    },
+    vertexShader: vertexShader,
+    fragmentShader: fragmentShader
   });
   this.world = new THREE.Points(geometry, material);
   this.scene.add(this.world);
+}
+
+World.prototype.initSepher = function () {
+  var CONST = this.constObj;
+
+  var geometry = new THREE.SphereGeometry(CONST.WORLD_RADIUS - 0.01, CONST.GLOBE_RESOLUTION, CONST.GLOBE_RESOLUTION);
+  geometry.computeTangents();
+  var material = new THREE.MeshBasicMaterial({
+    color: "#00D",
+    opacity: 0.7,
+    transparent: true
+  });
+  this.scene.add(new THREE.Mesh(geometry, material));
 }
 
 World.prototype.initControls = function () {
@@ -138,6 +149,7 @@ World.prototype.build = function () {
   this.initScene();
   this.initCamera();
   this.initWorld();
+  this.initSepher();
   this.initControls();
 }
 
