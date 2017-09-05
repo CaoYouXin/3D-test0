@@ -30,6 +30,10 @@ module.exports = {
             'es2015'
           ]
         }
+      },
+      {
+        test: /\.glsl$/,
+        loader: 'webpack-glsl-loader'
       }
     ]
   },
