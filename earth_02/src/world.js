@@ -71,12 +71,11 @@ World.prototype.sprite = function () {
     canvas.height / 2,
     canvas.width / 2
   );
-  gradient.addColorStop(0, 'rgba(230,215,128,1)');
-  gradient.addColorStop(0.5, 'rgba(220,200,110,1)');
-  gradient.addColorStop(0.72, 'rgba(200,180,98,.2)');
-  gradient.addColorStop(1, 'rgba(220,250,255,0)');
+  gradient.addColorStop(0, 'rgba(230,215,12,1)');
+  gradient.addColorStop(0.5, 'rgba(220,200,11,1)');
+  gradient.addColorStop(0.72, 'rgba(200,280,9,.2)');
+  gradient.addColorStop(1, 'rgba(220,250,25,0)');
   ctx.fillStyle = gradient;
-  // ctx.fillStyle = "#FFFFFF";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   return canvas;
 }
@@ -114,14 +113,17 @@ World.prototype.initWorld = function () {
   var planetMap = THREE.ImageUtils.loadTexture("Carte de la terre.png");
   var material = new THREE.ShaderMaterial({
     uniforms: {
-      "u_ps": { value: 5 },
+      "u_ps": { value: this.container.offsetHeight / 2.5 * CONST.PARTICLE_SIZE / 2 },
       "u_r": { value: CONST.WORLD_RADIUS + 0.0 },
       "u_pi": { value: Math.PI },
       "u_ball_tex": { type: 't', value: planetMap },
       "u_particle_tex": { type: 't', value: texture }
     },
     vertexShader: vertexShader,
-    fragmentShader: fragmentShader
+    fragmentShader: fragmentShader,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthTest: false,
   });
   this.world = new THREE.Points(geometry, material);
   this.scene.add(this.world);
@@ -133,9 +135,7 @@ World.prototype.initSepher = function () {
   var geometry = new THREE.SphereGeometry(CONST.WORLD_RADIUS - 0.01, CONST.GLOBE_RESOLUTION, CONST.GLOBE_RESOLUTION);
   geometry.computeTangents();
   var material = new THREE.MeshBasicMaterial({
-    color: "#00D",
-    opacity: 0.7,
-    transparent: true
+    color: "#00F",
   });
   this.scene.add(new THREE.Mesh(geometry, material));
 }
