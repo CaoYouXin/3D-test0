@@ -15,7 +15,7 @@ function World(el) {
     ROTATION_WORLD_RATE: 0.001,
     FIELD_OF_VIEW: 45,
     NEAR_CLIPPING_PLANE: 1,
-    FAR_CLIPPING_PLANE: 1000,
+    FAR_CLIPPING_PLANE: 10,
 
     WORLD_RADIUS: 1,
     GLOBE_RESOLUTION: 64,
@@ -113,7 +113,7 @@ World.prototype.initWorld = function () {
   var planetMap = THREE.ImageUtils.loadTexture("Carte de la terre.png");
   var material = new THREE.ShaderMaterial({
     uniforms: {
-      "u_ps": { value: this.container.offsetHeight / 2.5 * CONST.PARTICLE_SIZE / 2 },
+      "u_ps": { value: this.container.offsetHeight / 5 * CONST.PARTICLE_SIZE },
       "u_r": { value: CONST.WORLD_RADIUS + 0.0 },
       "u_pi": { value: Math.PI },
       "u_ball_tex": { type: 't', value: planetMap },
