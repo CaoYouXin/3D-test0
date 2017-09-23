@@ -26,6 +26,7 @@ light.position.set(0, 0, 1);
 scene.add(light);
 
 const loop = () => {
+  TWEEN.update();
   renderer.render(scene, camera);
   requestAnimationFrame(loop);
 }

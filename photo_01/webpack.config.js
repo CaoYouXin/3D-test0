@@ -34,6 +34,12 @@ module.exports = {
       {
         test: /\.glsl$/,
         loader: 'webpack-glsl-loader'
+      },
+      {
+        test: /\.(png|svg|jpg|gif)$/,
+        use: [
+          'file-loader'
+        ]
       }
     ]
   },
