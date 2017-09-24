@@ -1,5 +1,5 @@
 import { add2Scene } from './slider';
-import { addSmoke2Scene, evolveSmoke } from './smoke';
+import { addSmoke2Scene, evolveSmoke, toCamera } from './smoke';
 
 const CONST = {
   FIELD_OF_VIEW: 45,
@@ -25,8 +25,11 @@ const camera = new THREE.PerspectiveCamera(
 // const camera = new THREE.OrthographicCamera(
 //   container.offsetWidth / - 2, container.offsetWidth / 2,
 //   container.offsetHeight / 2, container.offsetHeight / - 2, 1, 1000);
-camera.position.set(0, 0, 3);
+camera.position.set(0, 0, 5);
+camera.lookAt(new THREE.Vector3(0, 0, 0));
 scene.add(camera);
+
+const controls = new THREE.OrbitControls(camera, container);
 
 const light = new THREE.DirectionalLight(0xffffff, 1.5);
 light.position.set(0, 0, 1);
@@ -36,11 +39,14 @@ const clock = new THREE.Clock();
 
 const loop = () => {
   TWEEN.update();
+
+  toCamera(camera);
   evolveSmoke(clock.getDelta());
+
   renderer.render(scene, camera);
   requestAnimationFrame(loop);
 }
 
 loop();
 
-addSmoke2Scene(scene, container);
+addSmoke2Scene(scene, camera, container);
