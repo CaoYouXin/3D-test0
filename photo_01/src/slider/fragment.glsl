@@ -1,5 +1,4 @@
-
-
+uniform sampler2D u_clip;
 uniform sampler2D u_pic_1;
 uniform sampler2D u_pic_2;
 uniform vec4 u_bound_1;
@@ -8,6 +7,7 @@ uniform float u_time;
 uniform float u_mode;
 
 varying vec2 v_uv;
+varying vec2 v_xy;
 
 vec4 getColor(vec2 uv, vec4 bound, sampler2D pic) {
   if (uv.x > bound[3] && uv.x < bound[1]
@@ -21,6 +21,22 @@ vec4 getColor(vec2 uv, vec4 bound, sampler2D pic) {
 }
 
 void main() {
+  if (u_mode == 2.0) {
+    float time = u_time * 2.5 + 0.05;
+    vec2 uv = v_uv / time;
+    if (time < 1.0) {
+      uv = uv - (1.0 / time - 1.0) / 2.0;
+    } else {
+      uv = uv + (1.0 - 1.0 / time) / 2.0;
+    }
+    vec4 clip = texture2D(u_clip, uv);
+    if (clip.a == 0.0) {
+      gl_FragColor = getColor(v_uv, u_bound_1, u_pic_1);
+    } else {
+      gl_FragColor = getColor(v_uv, u_bound_2, u_pic_2);
+    }
+  }
+
   if (u_mode == 0.0) {
     if (mod(v_uv.y * 10.0, 1.0) <= u_time) {
       gl_FragColor = getColor(v_uv, u_bound_1, u_pic_1);
